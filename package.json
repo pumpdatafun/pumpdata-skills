@@ -1,0 +1,13 @@
+{
+  "name": "pumpdata",
+  "version": "1.0.0",
+  "description": "pump.fun's whole on-chain history for coding agents and the command line: the pre-buy check, wallet classes, the wallet leaderboard, deployer records, base rates. Every pump.fun trade, ever.",
+  "type": "module",
+  "bin": { "pumpdata": "cli/pumpdata.mjs" },
+  "files": ["cli/", "skills/", "README.md", "LICENSE"],
+  "engines": { "node": ">=18" },
+  "license": "MIT",
+  "homepage": "https://pumpdata.fun",
+  "repository": { "type": "git", "url": "git+https://github.com/pumpdatafun/pumpdata-skills.git" },
+  "keywords": ["pump.fun", "pumpfun", "solana", "memecoin", "agent-skills", "claude-code", "mcp", "cli", "copy-trading", "rug-check"]
+}
