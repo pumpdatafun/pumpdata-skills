@@ -39,7 +39,7 @@ async function call(path, init = {}) {
   const open = OPEN.some((p) => path.startsWith(p));
   const keyed = !!KEY && !open;
   const url = SITE + (open || keyed ? path : "/free" + path);
-  const headers = { accept: "application/json", "user-agent": "pumpdata-cli/1.0", ...(init.body ? { "content-type": "application/json" } : {}), ...(keyed ? { "x-api-key": KEY } : {}) };
+  const headers = { accept: "application/json", "user-agent": "pdcli/1.0 (+https://github.com/pumpdatafun/pumpdata-skills)", ...(init.body ? { "content-type": "application/json" } : {}), ...(keyed ? { "x-api-key": KEY } : {}) };
   const res = await fetch(url, { ...init, headers });
   const text = await res.text();
   let body;
