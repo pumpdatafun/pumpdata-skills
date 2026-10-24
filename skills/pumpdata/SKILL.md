@@ -1,7 +1,7 @@
 ---
 name: pumpdata
 description: "Before an alpha call or a buy on pump.fun: the base rate for the market-cap band (how often coins like this one paid), what the buyers have been (winner, net loser, bot, supply seller, new), the deployer's record with how similar launches went, and an honest replay of a pick list with fees and fills. Every pump.fun trade, ever. Read-only; free to start under /free/ (300 calls a day), then paid per call in USDC over x402, from $0.005; yesterday's base rates free."
-version: 1.2.0
+version: 1.2.1
 author: pumpdatafun
 tags: [solana, pump.fun, base-rate, wallets, deployer, replay, backtest, x402, mcp, data, risk]
 platforms: [linux, macos, windows]
@@ -39,6 +39,10 @@ per call in USDC over x402 with your own wallet, from half a cent. Nothing here 
   pump.fun record and still trade, best first, each with `why` and its recent pace; `followable=1` keeps the ones a
   copier can keep up with (under 20 trades a day, a median hold of 2 minutes or more). Not pump.fun's own
   leaderboard, which ranks recent profit.
+- `GET https://pumpdata.fun/status.json`: how fresh each layer is right now (the API, the live recorder, the hourly
+  fill, the base-rate crossings, the deep tables, the daily stats and wire), each `ok`, `late` or `down` with its
+  `as_of`. Check it when an answer looks stale or a call fails; every answer also carries `X-Data-As-Of` and
+  `X-Live-As-Of`. How each field is made, and why the launch records have no lookahead: https://pumpdata.fun/methodology.
 - `GET https://pumpdata.fun/llms.txt` (what is in the warehouse), `GET https://pumpdata.fun/openapi.json` (the
   contract, with the price of each call in `x-payment-info`).
 - Telegram: `/baserate 15k-28k` to @pumpdatafun_bot.
