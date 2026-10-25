@@ -33,7 +33,7 @@ Or by hand: `git clone https://github.com/pumpdatafun/pumpdata-skills && cp -r p
 
 **Hermes:** `hermes skills install well-known:https://pumpdata.fun/.well-known/skills/pumpdata`
 
-**OpenBB:** `pip install git+https://github.com/pumpdatafun/openbb-pumpdata`, then `obb.pumpdata.check(mint=...)`, `obb.pumpdata.deployer(address=...)` and seven more ([openbb-pumpdata](https://github.com/pumpdatafun/openbb-pumpdata)).
+**OpenBB:** `pip install openbb-pumpdata`, then `obb.pumpdata.check(mint=...)`, `obb.pumpdata.deployer(address=...)` and seven more ([openbb-pumpdata](https://github.com/pumpdatafun/openbb-pumpdata)).
 
 **Vibe-Trading** (HKUDS), in `~/.vibe-trading/agent.json`, read-only tools only:
 
