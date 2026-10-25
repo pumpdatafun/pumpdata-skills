@@ -1,0 +1,23 @@
+{
+  "name": "pumpdata",
+  "description": "pump.fun's whole on-chain history for coding agents: the pre-buy check (who launched a coin, its bundle and insiders, how launches like it went), a deployer's record, what any wallet did on pump.fun, base rates by market cap, and a time machine that replays a pick list against the chain with real fees and fills. Every pump.fun trade, ever. Read-only; free to start, no key.",
+  "version": "1.2.1",
+  "author": {
+    "name": "pumpdata.fun",
+    "url": "https://pumpdata.fun"
+  },
+  "homepage": "https://pumpdata.fun",
+  "repository": "https://github.com/pumpdatafun/pumpdata-skills",
+  "license": "MIT",
+  "keywords": [
+    "claude-code",
+    "claude-skills",
+    "pump.fun",
+    "solana",
+    "memecoin",
+    "on-chain",
+    "backtesting",
+    "mcp"
+  ],
+  "skills": "./skills"
+}

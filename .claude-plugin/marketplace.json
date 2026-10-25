@@ -1,0 +1,18 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "pumpdata",
+  "description": "pumpdata.fun's skills: pump.fun's whole on-chain history for coding agents",
+  "owner": {
+    "name": "pumpdata.fun",
+    "url": "https://pumpdata.fun"
+  },
+  "plugins": [
+    {
+      "name": "pumpdata",
+      "description": "pump.fun's whole on-chain history for coding agents: the pre-buy check (who launched a coin, its bundle and insiders, how launches like it went), a deployer's record, what any wallet did on pump.fun, base rates by market cap, and a time machine that replays a pick list against the chain with real fees and fills. Every pump.fun trade, ever. Read-only; free to start, no key.",
+      "source": "./",
+      "category": "productivity",
+      "homepage": "https://github.com/pumpdatafun/pumpdata-skills"
+    }
+  ]
+}

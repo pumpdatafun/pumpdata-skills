@@ -13,13 +13,15 @@ Facts, not advice. Free with no key and no signup (30 calls every five minutes, 
 
 ## Install
 
-**Claude Code**, the skill and the MCP server:
+**Claude Code**, as a plugin (the skill), plus the MCP server:
 
 ```sh
-git clone https://github.com/pumpdatafun/pumpdata-skills
-mkdir -p ~/.claude/skills && cp -r pumpdata-skills/skills/pumpdata ~/.claude/skills/
+/plugin marketplace add pumpdatafun/pumpdata-skills
+/plugin install pumpdata@pumpdata
 claude mcp add --transport http pumpdata https://pumpdata.fun/mcp
 ```
+
+Or by hand: `git clone https://github.com/pumpdatafun/pumpdata-skills && cp -r pumpdata-skills/skills/pumpdata ~/.claude/skills/`.
 
 **Cursor**, in `~/.cursor/mcp.json`:
 
@@ -30,6 +32,20 @@ claude mcp add --transport http pumpdata https://pumpdata.fun/mcp
 **OpenClaw:** copy `skills/pumpdata` into `~/.openclaw/skills/`.
 
 **Hermes:** `hermes skills install well-known:https://pumpdata.fun/.well-known/skills/pumpdata`
+
+**OpenBB:** `pip install git+https://github.com/pumpdatafun/openbb-pumpdata`, then `obb.pumpdata.check(mint=...)`, `obb.pumpdata.deployer(address=...)` and seven more ([openbb-pumpdata](https://github.com/pumpdatafun/openbb-pumpdata)).
+
+**Vibe-Trading** (HKUDS), in `~/.vibe-trading/agent.json`, read-only tools only:
+
+```json
+{ "mcpServers": { "pumpdata": {
+    "type": "streamableHttp",
+    "url": "https://pumpdata.fun/mcp",
+    "enabledTools": ["check_coin", "launch_record", "similar_launches", "deployer_record", "wallet_records", "top_wallets", "base_rate", "find_coin", "stats"]
+} } }
+```
+
+Add `"headers": { "x-api-key": "pdk_..." }` with a free key from [pumpdata.fun/keys](https://pumpdata.fun/keys) for 2,000 calls a day. The paid `replay` tool is left out of that list on purpose.
 
 **Any other agent:** point it at [pumpdata.fun/skill.md](https://pumpdata.fun/skill.md), [pumpdata.fun/llms.txt](https://pumpdata.fun/llms.txt) or the [OpenAPI spec](https://pumpdata.fun/openapi.json).
 
