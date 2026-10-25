@@ -47,6 +47,8 @@ Or by hand: `git clone https://github.com/pumpdatafun/pumpdata-skills && cp -r p
 
 Add `"headers": { "x-api-key": "pdk_..." }` with a free key from [pumpdata.fun/keys](https://pumpdata.fun/keys) for 2,000 calls a day. The paid `replay` tool is left out of that list on purpose.
 
+**TradingAgents:** five pump.fun tools for its analysts, point-in-time like its own: [examples/tradingagents](examples/tradingagents).
+
 **Any other agent:** point it at [pumpdata.fun/skill.md](https://pumpdata.fun/skill.md), [pumpdata.fun/llms.txt](https://pumpdata.fun/llms.txt) or the [OpenAPI spec](https://pumpdata.fun/openapi.json).
 
 ## The CLI
