@@ -39,6 +39,9 @@ per call in USDC over x402 with your own wallet, from half a cent. Nothing here 
   pump.fun record and still trade, best first, each with `why` and its recent pace; `followable=1` keeps the ones a
   copier can keep up with (under 20 trades a day, a median hold of 2 minutes or more). Not pump.fun's own
   leaderboard, which ranks recent profit.
+- `https://pumpdata.fun/wallet/{address}` (a page) and `GET /free/deployer/{address}` (the same as JSON): a
+  deployer's whole record and its last 90 days beside launches like its next one; the serial deployers are
+  listed at `https://pumpdata.fun/deployers`, by launches and by graduation rate, never by profit.
 - `GET https://pumpdata.fun/status.json`: how fresh each layer is right now (the API, the live recorder, the hourly
   fill, the base-rate crossings, the deep tables, the daily stats and wire), each `ok`, `late` or `down` with its
   `as_of`. Check it when an answer looks stale or a call fails; every answer also carries `X-Data-As-Of` and

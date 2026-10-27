@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // pumpdata: pump.fun's whole on-chain history from the command line, for people and for coding agents.
 // Free with no key (30 calls every five minutes, 300 a day per IP); set PUMPDATA_KEY to a free key from
-// https://pumpdata.fun/keys for 2,000 calls and 2,000 wallet lookups a day. No dependencies; Node 18 or newer.
+// https://pumpdata.fun/keys?utm_source=skills for 2,000 calls and 2,000 wallet lookups a day. No dependencies; Node 18 or newer.
 //
 //   pumpdata check <mint>                  the pre-buy check: findings, flags, rules_say
 //   pumpdata launch <mint>                 a launch's record (deployer, bundle, insiders, look-alikes)
@@ -31,7 +31,7 @@ const OPEN = ["/check/", "/wallets/top", "/stats", "/status"];
 
 function usage(code = 0) {
   const lines = readFileSync(new URL(import.meta.url), "utf8").split("\n").filter((l) => l.startsWith("//   pumpdata")).map((l) => l.slice(5));
-  console.log("pumpdata: pump.fun's whole on-chain history from the command line\n\n" + lines.join("\n") + "\n\nPUMPDATA_KEY: a free key from https://pumpdata.fun/keys (optional). Add --json for raw answers.");
+  console.log("pumpdata: pump.fun's whole on-chain history from the command line\n\n" + lines.join("\n") + "\n\nPUMPDATA_KEY: a free key from https://pumpdata.fun/keys?utm_source=skills (optional). Add --json for raw answers.");
   process.exit(code);
 }
 
@@ -48,7 +48,7 @@ async function call(path, init = {}) {
     const why = body.why || body.error || `HTTP ${res.status}`;
     const reset = res.headers.get("retry-after");
     console.error(`pumpdata: ${res.status}: ${typeof why === "string" ? why : JSON.stringify(why)}${reset ? ` (retry in ${reset} s)` : ""}`);
-    if (res.status === 402 || res.status === 429) console.error(KEY ? "More: https://pumpdata.fun/keys" : "A free key has its own allowance: https://pumpdata.fun/keys (then PUMPDATA_KEY=...)");
+    if (res.status === 402 || res.status === 429) console.error(KEY ? "More: https://pumpdata.fun/keys?utm_source=skills" : "A free key has its own allowance: https://pumpdata.fun/keys?utm_source=skills (then PUMPDATA_KEY=...)");
     process.exit(1);
   }
   return body;

@@ -9,7 +9,7 @@ Ask your agent "check this coin", "who are these buyers", "which wallets are wor
 - **the wallet leaderboard:** wallets that win over their whole record and still trade, filtered to the ones a copier can keep up with
 - **deployer records** and **base rates** for any market-cap band
 
-Facts, not advice. Free with no key and no signup (30 calls every five minutes, 300 a day per IP); a free key from [pumpdata.fun/keys](https://pumpdata.fun/keys) gives 2,000 calls a day.
+Facts, not advice. Free with no key and no signup (30 calls every five minutes, 300 a day per IP); a free key from [pumpdata.fun/keys](https://pumpdata.fun/keys?utm_source=skills) gives 2,000 calls a day.
 
 ## Install
 
@@ -45,7 +45,7 @@ Or by hand: `git clone https://github.com/pumpdatafun/pumpdata-skills && cp -r p
 } } }
 ```
 
-Add `"headers": { "x-api-key": "pdk_..." }` with a free key from [pumpdata.fun/keys](https://pumpdata.fun/keys) for 2,000 calls a day. The paid `replay` tool is left out of that list on purpose.
+Add `"headers": { "x-api-key": "pdk_..." }` with a free key from [pumpdata.fun/keys](https://pumpdata.fun/keys?utm_source=skills) for 2,000 calls a day. The paid `replay` tool is left out of that list on purpose.
 
 **TradingAgents:** five pump.fun tools for its analysts, point-in-time like its own: [examples/tradingagents](examples/tradingagents).
 

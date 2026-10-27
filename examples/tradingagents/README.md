@@ -37,7 +37,7 @@ and tell that analyst in its prompt when to reach for them: "For a pump.fun coin
 mint, get_pump_deployer with its deployer, and get_pump_base_rate for its market-cap band before forming a view."
 
 No key is needed (300 lookups a day per IP). `PUMPDATA_KEY` with a free key from
-[pumpdata.fun/keys](https://pumpdata.fun/keys) gives 2,000 a day.
+[pumpdata.fun/keys](https://pumpdata.fun/keys?utm_source=skills) gives 2,000 a day.
 
 These are counts over the chain's record, not predictions or advice. How every field is made:
 [pumpdata.fun/methodology](https://pumpdata.fun/methodology).

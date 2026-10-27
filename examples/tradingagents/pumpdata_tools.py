@@ -11,7 +11,7 @@ after it.
   instead of leaking the future into a backtest.
 
 No key is needed (pumpdata.fun's free tier: 300 lookups a day per IP). Set PUMPDATA_KEY to a free key from
-https://pumpdata.fun/keys for 2,000 a day. Standard library HTTP only.
+https://pumpdata.fun/keys?utm_source=skills for 2,000 a day. Standard library HTTP only.
 """
 
 from __future__ import annotations
