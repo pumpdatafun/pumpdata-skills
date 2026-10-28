@@ -35,7 +35,7 @@ per call in USDC over x402 with your own wallet, from half a cent. Nothing here 
 - `GET https://pumpdata.fun/check/{mint}.json`: the pre-buy check in one call: `answer` (the findings as sentences), `flags`
   (serial_launcher, never_ran, curve_bought_at_launch, bundled, one_wallet_bought, insiders, sold_together, lookalikes_die,
   each with a sentence), `rules_say` and the launch record behind them. Start here for any coin.
-- `GET https://pumpdata.fun/launches/since.json?t=<unix seconds>`: every launch after a moment in the last 24 hours,
+- `GET https://pumpdata.fun/launches/since.json?t=<unix seconds>` (no `t`: the last ten minutes): every launch after a moment in the last 24 hours,
   oldest first, each with its deployer's record before it (launches, graduations, gap since the last) and the
   first-10-second bundle; launches newer than the hourly fill come within the minute (`source: "live"`, bundle not yet
   read). Poll it with `t = next_since` and keep each mint once; then call `/launch` or `/deployer` only for the coins
