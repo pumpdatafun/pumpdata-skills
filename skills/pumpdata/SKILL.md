@@ -33,8 +33,18 @@ per call in USDC over x402 with your own wallet, from half a cent. Nothing here 
   `checks`. `summary` is a paragraph to
   quote; each wallet and coin names the paid call that goes deeper. A past day: `/stats/{YYYY-MM-DD}.json`.
 - `GET https://pumpdata.fun/check/{mint}.json`: the pre-buy check in one call: `answer` (the findings as sentences), `flags`
-  (serial_launcher, never_ran, curve_bought_at_launch, bundled, insiders, lookalikes_die, each with a sentence), `rules_say`
-  and the launch record behind them. Start here for any coin.
+  (serial_launcher, never_ran, curve_bought_at_launch, bundled, one_wallet_bought, insiders, sold_together, lookalikes_die,
+  each with a sentence), `rules_say` and the launch record behind them. Start here for any coin.
+- `GET https://pumpdata.fun/launches/since.json?t=<unix seconds>`: every launch after a moment in the last 24 hours,
+  oldest first, each with its deployer's record before it (launches, graduations, gap since the last) and the
+  first-10-second bundle; launches newer than the hourly fill come within the minute (`source: "live"`, bundle not yet
+  read). Poll it with `t = next_since` and keep each mint once; then call `/launch` or `/deployer` only for the coins
+  you are considering. A whole UTC day (today and the two before): `GET /launches/{YYYY-MM-DD}.json`.
+- `GET https://pumpdata.fun/coin?q=<ticker or name>`: which coins a ticker means, newest first, each with its deployer.
+- The record calls without paying: `GET /free/launch/{mint}`, `GET /free/deployer/{address}`, `GET /free/similar/{mint}`,
+  `POST /free/wallets`, `GET /free/baserate`: the same answers, 30 calls every five minutes and 300 a day per address.
+  A free key (`https://pumpdata.fun/keys`, the `x-api-key` header on the paid paths) has 2,000 calls and 2,000 wallet
+  lookups a day of its own.
 - `GET https://pumpdata.fun/wallets/top?followable=1`: the wallet leaderboard. Wallets that win over their whole
   pump.fun record and still trade, best first, each with `why` and its recent pace; `followable=1` keeps the ones a
   copier can keep up with (under 20 trades a day, a median hold of 2 minutes or more). Not pump.fun's own
@@ -86,8 +96,9 @@ and the `PAYMENT-REQUIRED` header. Sign the transfer with your wallet and retry 
 answer comes back with the receipt in `PAYMENT-RESPONSE`. Your x402 tool does the retry for you. No key, no account.
 
 **MCP:** the same calls as tools at `POST https://pumpdata.fun/mcp` (Streamable HTTP, JSON-RPC 2.0):
-`stats`, `find_coin`, `base_rate`, `wallet_records`, `launch_record`, `deployer_record`, `similar_launches`, `replay`, `replay_result`. A tool called without `payment` returns the offer; call
-again with the `PAYMENT-SIGNATURE` value as `payment`.
+`stats`, `find_coin`, `check_coin`, `top_wallets`, `launches_since` (free), and `base_rate`, `wallet_records`, `launch_record`,
+`deployer_record`, `similar_launches`, `replay`, `replay_result`. A paid tool called without `payment` or an `x-api-key` returns
+the offer; call again with the `PAYMENT-SIGNATURE` value as `payment`.
 
 **From a ClawPump agent** (the `clawpump` MCP, with the `x402` skill enabled): `x402_pay_check` on the call's URL
 (free: the 402 offer, price and input schema), quote the price to the user, then `x402_pay` with `confirm_payment: true`
