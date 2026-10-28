@@ -33,7 +33,7 @@ per call in USDC over x402 with your own wallet, from half a cent. Nothing here 
   `checks`. `summary` is a paragraph to
   quote; each wallet and coin names the paid call that goes deeper. A past day: `/stats/{YYYY-MM-DD}.json`.
 - `GET https://pumpdata.fun/check/{mint}.json`: the pre-buy check in one call: `answer` (the findings as sentences), `flags`
-  (serial_launcher, never_ran, curve_bought_at_launch, bundled, one_wallet_bought, insiders, sold_together, lookalikes_die,
+  (serial_launcher, never_ran, curve_bought_at_launch, early_concentration (named bundled before Oct 28, 2026), one_wallet_bought, insiders, sold_together, lookalikes_die,
   each with a sentence), `rules_say` and the launch record behind them. Start here for any coin.
 - `GET https://pumpdata.fun/launches/since.json?t=<unix seconds>` (no `t`: the last ten minutes): every launch after a moment in the last 24 hours,
   oldest first, each with its deployer's record before it (launches, graduations, gap since the last) and the
