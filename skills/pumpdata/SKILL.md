@@ -33,13 +33,17 @@ per call in USDC over x402 with your own wallet, from half a cent. Nothing here 
   `checks`. `summary` is a paragraph to
   quote; each wallet and coin names the paid call that goes deeper. A past day: `/stats/{YYYY-MM-DD}.json`.
 - `GET https://pumpdata.fun/check/{mint}.json`: the pre-buy check in one call: `answer` (the findings as sentences), `flags`
-  (serial_launcher, never_ran, curve_bought_at_launch, early_concentration (named bundled before Oct 28, 2026), one_wallet_bought, insiders, sold_together, lookalikes_die,
+  (serial_launcher, deployer_sells_fast, never_ran, curve_bought_at_launch, early_concentration (named bundled before Oct 28, 2026), one_wallet_bought, insiders, sold_together, lookalikes_die,
   each with a sentence), `rules_say` and the launch record behind them. Start here for any coin.
 - `GET https://pumpdata.fun/launches/since.json?t=<unix seconds>` (no `t`: the last ten minutes): every launch after a moment in the last 24 hours,
   oldest first, each with its deployer's record before it (launches, graduations, gap since the last) and the
   first-10-second bundle; launches newer than the hourly fill come within the minute (`source: "live"`, bundle not yet
   read). Poll it with `t = next_since` and keep each mint once; then call `/launch` or `/deployer` only for the coins
   you are considering. A whole UTC day (today and the two before): `GET /launches/{YYYY-MM-DD}.json`.
+- `GET https://pumpdata.fun/graduations/{YYYY-MM-DD}.json` (today and the two UTC days before): every coin whose bonding
+  curve completed that day, with `graduated_after_s` (seconds from its create), `same_second` (the whole curve bought
+  within a second of launch, before anyone could see the coin: about a third of graduations), the deployer's launches
+  and graduations before it, and the day's top graduating deployers.
 - `GET https://pumpdata.fun/coin?q=<ticker or name>`: which coins a ticker means, newest first, each with its deployer.
 - The record calls without paying: `GET /free/launch/{mint}`, `GET /free/deployer/{address}`, `GET /free/similar/{mint}`,
   `POST /free/wallets`, `GET /free/baserate`: the same answers, 30 calls every five minutes and 300 a day per address.
@@ -117,7 +121,7 @@ band's odds, the deployer's record and the buyers' records together.
 | `202` (replay) | queued and paid, `id` in the body | poll `GET /replay/{id}` (free) every few seconds until `state` is `done` (the answer is in `result`) or `failed` (after one free retry; `error` says why) |
 | `404` `not_found` | the window ends before the data begins (`X-Data-From`), or (`/launch`) a mint it does not know yet; a window inside the data with no crossings is not a 404 but a charged `200` | nothing was charged; ask a later window, or check the mint (a fresh launch may not be built yet; retry later) |
 | `400` | the request is malformed (band, window, body), or the window is over 31 days; nothing was charged | fix it (`error` or `detail` says what), or split the window into months |
-| `429` | too many calls from one address | wait for `retry-after` (60 s) |
+| `429` | too many calls from one address, or the free five minutes are used | wait for `retry-after`; past a free allowance the body's `next` lists the ways on in order (wait, pay over x402, an email gets a key) |
 | `upstream_failed` (the backend's status passed through, `502` for a backend `403`), or `503` `upstream_unreachable` | the backend failed or could not be reached; nothing was charged | on a 400 fix the request; if the `detail` text contains `query_timeout`, narrow the window; else retry later |
 | `503` `payment_settle_uncertain` | the payment may or may not have settled; no receipt | do not pay again blindly |
 | `503` `replay_queue_unavailable` on `POST /replay` | paid but not queued; the receipt is in `payment` and `PAYMENT-RESPONSE` | do not pay again; keep the receipt, the run is owed (on a poll it means retry shortly) |
