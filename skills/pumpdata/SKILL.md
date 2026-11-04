@@ -45,6 +45,17 @@ per call in USDC over x402 with your own wallet, from half a cent. Nothing here 
   within a second of launch, before anyone could see the coin: about a third of graduations), the deployer's launches
   and graduations before it, and the day's top graduating deployers.
 - `GET https://pumpdata.fun/coin?q=<ticker or name>`: which coins a ticker means, newest first, each with its deployer.
+- `GET https://pumpdata.fun/ticker/{symbol}.json` (or the MCP tool `ticker_crowd`): the crowd a new coin stands in.
+  The ticker's launches over the last three UTC days (each day's first, and the ones that graduated with how long after
+  the first they launched), how many launched in the last two hours, its launches and deployers over 14 days, and every
+  coin with the ticker that ever graduated (the first and the biggest named). Most launches reuse a ticker (88.3% of
+  October 2026's): read this before calling a coin "the" $TICKER.
+- `GET https://pumpdata.fun/trending.json?window=6h&lane=new|hot|both&limit=10` (or the MCP tool `trending`): the coins
+  with the most SOL flowing in (buys minus sells) over the trailing 1h, 6h or 12h, among coins without early
+  concentration, dust trades, a thin pool, a one-block supply sale or a launch-slot buyout. Lanes: `new` (launched inside
+  the window, curve not finished) and `hot` (any age). `buyers_in_window` counts wallets that bought, not holders. The
+  answer carries its rule and its backtest (Nov 1-2 2026: 22.2% of the 6h new list graduated within a day; most listed
+  coins were below their listed market cap an hour later). Not a recommendation; refreshed every 30 s.
 - The record calls without paying: `GET /free/launch/{mint}`, `GET /free/deployer/{address}`, `GET /free/similar/{mint}`,
   `POST /free/wallets`, `GET /free/baserate`: the same answers, 30 calls every five minutes and 300 a day per address.
   A free key (`https://pumpdata.fun/keys`, the `x-api-key` header on the paid paths) has 2,000 calls and 2,000 wallet
@@ -100,7 +111,7 @@ and the `PAYMENT-REQUIRED` header. Sign the transfer with your wallet and retry 
 answer comes back with the receipt in `PAYMENT-RESPONSE`. Your x402 tool does the retry for you. No key, no account.
 
 **MCP:** the same calls as tools at `POST https://pumpdata.fun/mcp` (Streamable HTTP, JSON-RPC 2.0):
-`stats`, `find_coin`, `check_coin`, `top_wallets`, `launches_since` (free), and `base_rate`, `wallet_records`, `launch_record`,
+`stats`, `find_coin`, `check_coin`, `top_wallets`, `launches_since`, `ticker_crowd`, `trending` (free), and `base_rate`, `wallet_records`, `launch_record`,
 `deployer_record`, `similar_launches`, `replay`, `replay_result`. A paid tool called without `payment` or an `x-api-key` returns
 the offer; call again with the `PAYMENT-SIGNATURE` value as `payment`.
 

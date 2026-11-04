@@ -12,6 +12,8 @@
 //   pumpdata baserate <band> [days]        how often coins in a market-cap band reached 2x/5x/10x/20x (e.g. 15k-28k 7)
 //   pumpdata stats [YYYY-MM-DD]            a day on pump.fun (yesterday by default)
 //   pumpdata status                        how fresh each layer of the data is right now
+//   pumpdata trending [--window 6h] [--lane new|hot|both] [--limit N]  the coins with the most SOL flowing in
+//   pumpdata ticker <SYMBOL>               a ticker's crowd: who else launched it, which ever graduated
 //
 // Add --json to any command for the raw answer. Every answer is a count or a rule over the chain's record, not advice.
 
@@ -22,12 +24,12 @@ const KEY = process.env.PUMPDATA_KEY || "";
 const args = process.argv.slice(2);
 const flag = (name) => args.includes(name);
 const opt = (name, dflt) => { const i = args.indexOf(name); return i >= 0 && args[i + 1] ? args[i + 1] : dflt; };
-const pos = args.filter((a, i) => !a.startsWith("--") && args[i - 1] !== "--limit");
+const pos = args.filter((a, i) => !a.startsWith("--") && !["--limit", "--window", "--lane"].includes(args[i - 1]));
 const [cmd, ...rest] = pos;
 const asJson = flag("--json");
 const MINT = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
 // answered free for everyone, key or not; the rest go to /free/<path> without a key and to <path> with one
-const OPEN = ["/check/", "/wallets/top", "/stats", "/status"];
+const OPEN = ["/check/", "/wallets/top", "/stats", "/status", "/trending", "/ticker/"];
 
 function usage(code = 0) {
   const lines = readFileSync(new URL(import.meta.url), "utf8").split("\n").filter((l) => l.startsWith("//   pumpdata")).map((l) => l.slice(5));
@@ -120,6 +122,33 @@ async function main() {
       if (asJson) return out(j);
       console.log(`Overall: ${j.overall}`);
       for (const c of j.components) console.log(`  ${c.level.padEnd(5)} ${c.name}: ${c.as_of ?? "unknown"}`);
+      return;
+    }
+    case "trending": {
+      const qs = new URLSearchParams({ window: opt("--window", "6h"), lane: opt("--lane", "both"), limit: opt("--limit", "10") });
+      const j = await call(`/trending.json?${qs}`);
+      if (asJson) return out(j);
+      console.log(`Trending over ${j.window} (as of ${j.as_of}); net SOL in = buys minus sells. Not a recommendation.`);
+      for (const lane of ["new", "hot"]) {
+        if (!Array.isArray(j[lane]) || !j[lane].length) continue;
+        console.log(`\n${lane === "new" ? "New (launched in the window)" : "Hot (any age)"}:`);
+        for (const c of j[lane]) {
+          const cap = typeof c.market_cap_usd_now === "number" ? `$${Math.round(c.market_cap_usd_now).toLocaleString("en-US")}` : "n/a";
+          console.log(`  ${String(c.symbol || "?").padEnd(12)} ${sol(c.net_sol).padStart(10)} in (${sol(c.net_sol_1h)} last hour)  ${c.buyers_in_window} buyers  cap ${cap}  ${c.age_min} min old${c.graduated ? ", graduated" : ""}  ${c.mint}`);
+        }
+      }
+      const b = j.backtest?.new_6h, base = j.backtest?.baseline_new_under_1h;
+      if (b) console.log(`\nBacktest (${j.backtest.snapshots}): of the 6h new list, ${b.graduated_within_24h_pct}% graduated within a day (${base?.graduated_within_24h_pct ?? "?"}% of all new coins), ${b.at_or_above_listed_cap_1h_later_pct}% were at or above their listed cap an hour later.`);
+      return;
+    }
+    case "ticker": {
+      const [sym] = rest; if (!sym) usage(2);
+      const j = await call(`/ticker/${encodeURIComponent(sym.replace(/^\$/, ""))}.json`);
+      if (asJson) return out(j);
+      const r = j.recent_days || {}, f = j.last_14_days || {}, g = j.graduates_ever || {};
+      console.log(`$${j.ticker}: ${j.launched_last_2h} launched in the last 2 hours; ${r.launches} in the last ${r.days} days${r.capped ? " (capped)" : ""}; ${f.launches} by ${f.deployers} deployers over 14 days.`);
+      for (const d of r.by_day || []) console.log(`  ${d.day}: ${d.launches} launches by ${d.deployers} deployers, ${d.graduated} graduated; first ${d.first?.mint ?? "?"}`);
+      console.log(`Ever graduated: ${g.count ?? 0}${g.first ? `; the first ${g.first.mint} (created ${g.first.created})` : ""}${g.biggest ? `; the biggest ${g.biggest.mint}${g.biggest.peak_day1_usd ? ` (day-one peak $${Math.round(g.biggest.peak_day1_usd).toLocaleString("en-US")})` : ""}` : ""}.`);
       return;
     }
     default:

@@ -69,6 +69,8 @@ pumpdata similar <mint>                 the launches most like this one, and wha
 pumpdata baserate <band> [days]         how often coins in a band reached 2x/5x/10x/20x (e.g. 15k-28k 7)
 pumpdata stats [YYYY-MM-DD]             a day on pump.fun (yesterday by default)
 pumpdata status                         how fresh each layer of the data is right now
+pumpdata trending [--window 6h] [--lane new|hot|both]   the coins with the most SOL flowing in, by lane
+pumpdata ticker <SYMBOL>                 a ticker's crowd: who else launched it, which ever graduated
 ```
 
 Add `--json` to any command for the raw answer, which is what an agent should read. Set `PUMPDATA_KEY` to use a key.
