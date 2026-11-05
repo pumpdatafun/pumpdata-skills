@@ -58,8 +58,7 @@ per call in USDC over x402 with your own wallet, from half a cent. Nothing here 
   coins were below their listed market cap an hour later). Not a recommendation; refreshed every 30 s.
 - The record calls without paying: `GET /free/launch/{mint}`, `GET /free/deployer/{address}`, `GET /free/similar/{mint}`,
   `POST /free/wallets`, `GET /free/baserate`: the same answers, 30 calls every five minutes and 300 a day per address.
-  A free key (`https://pumpdata.fun/keys`, the `x-api-key` header on the paid paths) has 2,000 calls and 2,000 wallet
-  lookups a day of its own.
+  A free key (`https://pumpdata.fun/keys`, the `x-api-key` header on the paid paths) has no daily cap.
 - `GET https://pumpdata.fun/wallets/top?followable=1`: the wallet leaderboard. Wallets that win over their whole
   pump.fun record and still trade, best first, each with `why` and its recent pace; `followable=1` keeps the ones a
   copier can keep up with (under 20 trades a day, a median hold of 2 minutes or more). Not pump.fun's own

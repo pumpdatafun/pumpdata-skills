@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // pumpdata: pump.fun's whole on-chain history from the command line, for people and for coding agents.
 // Free with no key (30 calls every five minutes, 300 a day per IP); set PUMPDATA_KEY to a free key from
-// https://pumpdata.fun/keys?utm_source=skills for 2,000 calls and 2,000 wallet lookups a day. No dependencies; Node 18 or newer.
+// https://pumpdata.fun/keys?utm_source=skills for no daily cap. No dependencies; Node 18 or newer.
 //
 //   pumpdata check <mint>                  the pre-buy check: findings, flags, rules_say
 //   pumpdata launch <mint>                 a launch's record (deployer, bundle, insiders, look-alikes)
