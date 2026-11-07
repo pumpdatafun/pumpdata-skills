@@ -41,6 +41,11 @@ per call in USDC over x402 with your own wallet, from half a cent. Nothing here 
   read). Poll it with `t = next_since` and keep each mint once; then call `/launch` or `/deployer` only for the coins
   you are considering. `min_launches=20` keeps the serial deployers' launches; `deployer=<wallet>` one deployer's. A whole
   UTC day (today and the two before): `GET /launches/{YYYY-MM-DD}.json`.
+- `wss://pumpdata.fun/stream?key=<key>&types=create,trade,complete,migrate,record&min_sol=&mints=` (a WebSocket; start
+  the 7-day trial once with `POST https://pumpdata.fun/stream/trial` and `x-api-key`): every create, curve and PumpSwap
+  trade, curve completion and migration about two seconds after its block, unmetered, one JSON event per message
+  (`type`); `record` is a new coin's deployer record a few seconds after its create. Use it instead of polling when
+  seconds matter; filter trades with `min_sol` or `mints` (about 200 a second unfiltered) and reconnect on close.
 - `GET https://pumpdata.fun/graduations/{YYYY-MM-DD}.json` (today and the two UTC days before): every coin whose bonding
   curve completed that day, with `graduated_after_s` (seconds from its create), `same_second` (the whole curve bought
   within a second of launch, before anyone could see the coin: about a third of graduations), the deployer's launches
@@ -74,6 +79,10 @@ per call in USDC over x402 with your own wallet, from half a cent. Nothing here 
 - `https://pumpdata.fun/wallet/{address}` (a page) and `GET /free/deployer/{address}` (the same as JSON): a
   deployer's whole record and its last 90 days beside launches like its next one; the serial deployers are
   listed at `https://pumpdata.fun/deployers`, by launches and by graduation rate, never by profit.
+- `GET https://pumpdata.fun/wallet/{address}/funding.json` (or `POST` the same path without `.json` to start a walk):
+  who funded a wallet. Who sent it its first SOL, who funded that wallet, up to five hops, each with the amount, time
+  and transaction; where the walk stopped (more than 5,000 transactions ends it: exchanges, services, bots); and which
+  other walked wallets got their first SOL from the same address. The top serial deployers are walked ahead; free.
 - `GET https://pumpdata.fun/status.json`: how fresh each layer is right now (the API, the live recorder, the hourly
   fill, the base-rate crossings, the deep tables, the daily stats and wire), each `ok`, `late` or `down` with its
   `as_of`. Check it when an answer looks stale or a call fails; every answer also carries `X-Data-As-Of` and
@@ -118,7 +127,7 @@ and the `PAYMENT-REQUIRED` header. Sign the transfer with your wallet and retry 
 answer comes back with the receipt in `PAYMENT-RESPONSE`. Your x402 tool does the retry for you. No key, no account.
 
 **MCP:** the same calls as tools at `POST https://pumpdata.fun/mcp` (Streamable HTTP, JSON-RPC 2.0):
-`stats`, `find_coin`, `check_coin`, `top_wallets`, `launches_since`, `ticker_crowd`, `trending`, `whale_trades`, `graduations`, `odds_by_market_cap` (free), and `base_rate`, `wallet_records`, `launch_record`,
+`stats`, `find_coin`, `check_coin`, `top_wallets`, `who_funded`, `launches_since`, `ticker_crowd`, `trending`, `whale_trades`, `graduations`, `odds_by_market_cap` (free), and `base_rate`, `wallet_records`, `launch_record`,
 `deployer_record`, `similar_launches`, `replay`, `replay_result`. A paid tool called without `payment` or an `x-api-key` returns
 the offer; call again with the `PAYMENT-SIGNATURE` value as `payment`.
 
