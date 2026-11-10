@@ -9,7 +9,7 @@
   "plugins": [
     {
       "name": "pumpdata",
-      "description": "pump.fun's whole on-chain history for coding agents: the pre-buy check (who launched a coin, its bundle and insiders, how launches like it went), a deployer's record, what any wallet did on pump.fun, base rates by market cap, and a time machine that replays a pick list against the chain with real fees and fills. Every pump.fun trade, ever. Read-only; free to start, no key.",
+      "description": "pump.fun data for coding and trading agents: six skills. A rug check and dev check on any CA before you ape, a dev-wallet watch (dev sold, dev launched again), a new-launch filter for sniper bots, the smart-money wallets worth following, and an honest audit of a KOL's calls with fees and the dead coins. Every pump.fun trade, ever. Read-only; free to start, no key.",
       "source": "./",
       "category": "productivity",
       "homepage": "https://github.com/pumpdatafun/pumpdata-skills"

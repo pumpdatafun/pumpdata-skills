@@ -14,6 +14,8 @@
 //   pumpdata status                        how fresh each layer of the data is right now
 //   pumpdata trending [--window 6h] [--lane new|hot|both] [--limit N]  the coins with the most SOL flowing in
 //   pumpdata ticker <SYMBOL>               a ticker's crowd: who else launched it, which ever graduated
+//   pumpdata devwatch <mint> [--every S]   watch the coin's dev: its sells of $1,000+ and its new launches (Ctrl-C stops)
+//   pumpdata audit <picks.json> [--id ID]  replay a caller's picks with fees, fills and the dead coins ($2 a run, x402)
 //
 // Add --json to any command for the raw answer. Every answer is a count or a rule over the chain's record, not advice.
 
@@ -24,12 +26,12 @@ const KEY = process.env.PUMPDATA_KEY || "";
 const args = process.argv.slice(2);
 const flag = (name) => args.includes(name);
 const opt = (name, dflt) => { const i = args.indexOf(name); return i >= 0 && args[i + 1] ? args[i + 1] : dflt; };
-const pos = args.filter((a, i) => !a.startsWith("--") && !["--limit", "--window", "--lane"].includes(args[i - 1]));
+const pos = args.filter((a, i) => !a.startsWith("--") && !["--limit", "--window", "--lane", "--every", "--id"].includes(args[i - 1]));
 const [cmd, ...rest] = pos;
 const asJson = flag("--json");
 const MINT = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
 // answered free for everyone, key or not; the rest go to /free/<path> without a key and to <path> with one
-const OPEN = ["/check/", "/wallets/top", "/stats", "/status", "/trending", "/ticker/"];
+const OPEN = ["/check/", "/wallets/top", "/stats", "/status", "/trending", "/ticker/", "/trades/", "/launches/", "/replay/"];
 
 function usage(code = 0) {
   const lines = readFileSync(new URL(import.meta.url), "utf8").split("\n").filter((l) => l.startsWith("//   pumpdata")).map((l) => l.slice(5));
@@ -150,6 +152,54 @@ async function main() {
       for (const d of r.by_day || []) console.log(`  ${d.day}: ${d.launches} launches by ${d.deployers} deployers, ${d.graduated} graduated; first ${d.first?.mint ?? "?"}`);
       console.log(`Ever graduated: ${g.count ?? 0}${g.first ? `; the first ${g.first.mint} (created ${g.first.created})` : ""}${g.biggest ? `; the biggest ${g.biggest.mint}${g.biggest.peak_day1_usd ? ` (day-one peak $${Math.round(g.biggest.peak_day1_usd).toLocaleString("en-US")})` : ""}` : ""}.`);
       return;
+    }
+    case "devwatch": {
+      const [m] = rest; if (!MINT.test(m || "")) usage(2);
+      const every = Math.max(20, Number(opt("--every", "30"))) * 1000;
+      const l = await call(`/launch/${m}`);
+      const dev = l.deployer?.address;
+      if (!dev) { console.error("pumpdata: no deployer on record for this mint yet; try again after the next hourly fill"); process.exit(1); }
+      const d = l.deployer;
+      console.log(`Dev ${dev}: ${d.launches} launches, ${d.graduations} graduated before this one. Watching every ${every / 1000} s (sells of $1,000+ and new launches; every trade needs the stream: https://pumpdata.fun/pump-fun-stream).`);
+      const seen = new Set();
+      let t = Math.floor(Date.now() / 1000);
+      for (;;) {
+        const big = await call(`/trades/large.json?wallet=${dev}&min_usd=1000`);
+        for (const x of big.trades || []) {
+          const k = `${x.slot}:${x.mint}:${x.side}:${x.sol}`; if (seen.has(k)) continue; seen.add(k);
+          if (x.ts * 1000 < Date.now() - 3600_000) continue;
+          console.log(`${x.at}  dev ${x.side.toUpperCase()} ${sol(x.sol)} ($${Math.round(x.usd).toLocaleString("en-US")}) of ${x.symbol || x.mint}${x.mint === m ? "  <- this coin" : ""}`);
+        }
+        const nl = await call(`/launches/since.json?deployer=${dev}&t=${t}`);
+        const cols = nl.columns || [];
+        for (const row of nl.launches || []) { const r = Object.fromEntries(cols.map((c, i) => [c, row[i]])); if (r.mint !== m && !seen.has(r.mint)) { seen.add(r.mint); console.log(`${new Date(r.created * 1000).toISOString().slice(0, 19)}Z  dev LAUNCHED ${r.mint}`); } }
+        if (nl.next_since) t = nl.next_since;
+        await new Promise((r) => setTimeout(r, every));
+      }
+    }
+    case "audit": {
+      let id = opt("--id", "");
+      if (!id) {
+        const [file] = rest; if (!file) usage(2);
+        const body = JSON.parse(readFileSync(file, "utf8"));
+        const picks = Array.isArray(body) ? { picks: body } : body;
+        const res = await fetch(`${SITE}/replay`, { method: "POST", body: JSON.stringify(picks), headers: { "content-type": "application/json", "user-agent": "pdcli/1.0 (+https://github.com/pumpdatafun/pumpdata-skills)", ...(KEY ? { "x-api-key": KEY } : {}) } });
+        const j = await res.json().catch(() => ({}));
+        if (res.status === 402) {
+          const a = j.accepts?.[0] || {};
+          console.log(`A replay of ${picks.picks.length} picks costs ${a.amount ? `$${(Number(a.amount) / 1e6).toFixed(2)}` : "$2"} in USDC over x402 (Solana). Pay it with an x402 client (POST ${SITE}/replay with this body), then: pumpdata audit --id <id>`);
+          console.log(`More: ${SITE}/pump-fun-backtest`);
+          return;
+        }
+        if (res.status !== 202 || !j.id) { console.error(`pumpdata: ${res.status}: ${j.error || j.why || JSON.stringify(j).slice(0, 300)}`); process.exit(1); }
+        id = j.id; console.log(`Queued: ${id}`);
+      }
+      for (;;) {
+        const r = await call(`/replay/${id}`);
+        if (r.state === "done") return out(r.result ?? r);
+        if (r.state === "failed") { console.error(`pumpdata: replay failed: ${r.error || "unknown"}`); process.exit(1); }
+        await new Promise((res) => setTimeout(res, 3000));
+      }
     }
     default:
       usage(2);

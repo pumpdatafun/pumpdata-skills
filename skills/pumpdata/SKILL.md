@@ -1,9 +1,9 @@
 ---
 name: pumpdata
-description: "Before an alpha call or a buy on pump.fun: the base rate for the market-cap band (how often coins like this one paid), what the buyers have been (winner, net loser, bot, supply seller, new), the deployer's record with how similar launches went, and an honest replay of a pick list with fees and fills. Every pump.fun trade, ever. Read-only; free to start under /free/ (300 calls a day), then paid per call in USDC over x402, from $0.005; yesterday's base rates free."
-version: 1.2.1
+description: "pump.fun data for trading agents and bots: a rug check and dev check on any CA before you ape (the dev's record, whether the dev sells fast, how much the first-10-second snipers took, the whole curve bought at launch, insiders), who the buyers are (smart money, winners, bots, snipers, supply sellers, fresh wallets), whale trades, new launches filtered as they happen, the odds that a coin at a market cap 2x's or 10x's, and an honest backtest of a KOL's calls or your bot's picks with fees and the dead coins. Every pump.fun trade, ever. Read-only; free to start under /free/ (300 calls a day), then paid per call in USDC over x402, from $0.005; yesterday's base rates free."
+version: 1.4.0
 author: pumpdatafun
-tags: [solana, pump.fun, base-rate, wallets, deployer, replay, backtest, x402, mcp, data, risk]
+tags: [solana, pump.fun, pumpfun, memecoin, rug-check, dev-check, smart-money, snipers, kol, base-rate, wallets, deployer, replay, backtest, x402, mcp, data, risk]
 platforms: [linux, macos, windows]
 prerequisites:
   commands: [curl]
@@ -11,7 +11,7 @@ metadata:
   hermes:
     category: crypto
     requires_toolsets: [terminal]
-    related_skills: [rug-check, survivor-check, clawpump, dex-pools]
+    related_skills: [rug-check, survivor-check, clawpump, dex-pools, pump-prebuy-check, pump-dev-watch, pump-launch-filter, pump-call-audit, pump-follow-wallets]
     homepage: https://pumpdata.fun
 ---
 
@@ -35,6 +35,11 @@ per call in USDC over x402 with your own wallet, from half a cent. Nothing here 
 - `GET https://pumpdata.fun/check/{mint}.json`: the pre-buy check in one call: `answer` (the findings as sentences), `flags`
   (serial_launcher, deployer_sells_fast, never_ran, curve_bought_at_launch, early_concentration (named bundled before Oct 28, 2026), one_wallet_bought, insiders, sold_together, lookalikes_die,
   each with a sentence), `rules_say` and the launch record behind them. Start here for any coin.
+- `GET https://pumpdata.fun/now/{mint}.json`: the coin right now (edge-cached 10 s): market cap, holders, flow and
+  change over 5m/1h/6h/12h, who made the volume, what a 0.1/0.5/1 SOL buy moves the price, and `checks`, the pre-buy
+  checklist's live rows (biggest holder, top 10 holders, volume against market cap, fees paid, buy and sell sizes,
+  trades a second, volume bots, off its high), each `{id, mark: ok|warn|bad|info, what, says}`, marked against the
+  rule of thumb it names. Quote the rule with the mark; a mark is not a verdict.
 - `GET https://pumpdata.fun/launches/since.json?t=<unix seconds>` (no `t`: the last ten minutes): every launch after a moment in the last 24 hours,
   oldest first, each with its deployer's record before it (launches, graduations, gap since the last) and the
   first-10-second bundle; launches newer than the hourly fill come within the minute (`source: "live"`, bundle not yet
@@ -43,7 +48,7 @@ per call in USDC over x402 with your own wallet, from half a cent. Nothing here 
   UTC day (today and the two before): `GET /launches/{YYYY-MM-DD}.json`.
 - `wss://pumpdata.fun/stream?key=<key>&types=create,trade,complete,migrate,record&min_sol=&mints=` (a WebSocket; start
   the 7-day trial once with `POST https://pumpdata.fun/stream/trial` and `x-api-key`): every create, curve and PumpSwap
-  trade, curve completion and migration about two seconds after its block, unmetered, one JSON event per message
+  trade, curve completion and migration about 1.5 seconds after its block, unmetered, one JSON event per message
   (`type`); `record` is a new coin's deployer record a few seconds after its create. Use it instead of polling when
   seconds matter; filter trades with `min_sol` or `mints` (about 200 a second unfiltered) and reconnect on close.
 - `GET https://pumpdata.fun/graduations/{YYYY-MM-DD}.json` (today and the two UTC days before): every coin whose bonding
@@ -57,6 +62,9 @@ per call in USDC over x402 with your own wallet, from half a cent. Nothing here 
   cap at the trade; `wallet=` for one wallet's. A record of what wallets did, not a signal. The page: /whales.
 - `GET https://pumpdata.fun/public/baserate.json` (or the MCP tool `odds_by_market_cap`): yesterday's odds for every
   market-cap band, how many coins crossed it and what share did 2x, 5x, 10x, 20x within three hours. Pages: /pump-fun-odds.
+- `GET https://pumpdata.fun/screener.json` (or the MCP tool `screener`): young coins (under three days, from the trending
+  lists) screened now: 12-hour volume 2-5x the market cap, top 10 holders 30% or less, under 15% bundled at launch, a
+  trade a second, no volume-bot shape; `pass` and `near` (one or two missed, named). Often none pass. Page: /pump-fun-screener.
 - `GET https://pumpdata.fun/coin?q=<ticker or name>`: which coins a ticker means, newest first, each with its deployer.
 - `GET https://pumpdata.fun/ticker/{symbol}.json` (or the MCP tool `ticker_crowd`): the crowd a new coin stands in.
   The ticker's launches over the last three UTC days (each day's first, and the ones that graduated with how long after
@@ -89,7 +97,8 @@ per call in USDC over x402 with your own wallet, from half a cent. Nothing here 
   `X-Live-As-Of`. How each field is made, and why the launch records have no lookahead: https://pumpdata.fun/methodology.
 - `GET https://pumpdata.fun/llms.txt` (what is in the warehouse), `GET https://pumpdata.fun/openapi.json` (the
   contract, with the price of each call in `x-payment-info`).
-- Telegram: `/baserate 15k-28k` to @pumpdatafun_bot.
+- Telegram: @pumpdatafun_bot (a pasted contract address gets the check; `/baserate 15k-28k`; in a group it keeps who
+  called each coin first, `/calls`). The same bot for Discord servers: https://pumpdata.fun/pump-fun-discord-bot.
 
 ## When to use it
 
@@ -127,7 +136,7 @@ and the `PAYMENT-REQUIRED` header. Sign the transfer with your wallet and retry 
 answer comes back with the receipt in `PAYMENT-RESPONSE`. Your x402 tool does the retry for you. No key, no account.
 
 **MCP:** the same calls as tools at `POST https://pumpdata.fun/mcp` (Streamable HTTP, JSON-RPC 2.0):
-`stats`, `find_coin`, `check_coin`, `top_wallets`, `who_funded`, `launches_since`, `ticker_crowd`, `trending`, `whale_trades`, `graduations`, `odds_by_market_cap` (free), and `base_rate`, `wallet_records`, `launch_record`,
+`stats`, `find_coin`, `check_coin`, `top_wallets`, `who_funded`, `launches_since`, `ticker_crowd`, `trending`, `screener`, `whale_trades`, `graduations`, `odds_by_market_cap` (free), and `base_rate`, `wallet_records`, `launch_record`,
 `deployer_record`, `similar_launches`, `replay`, `replay_result`. A paid tool called without `payment` or an `x-api-key` returns
 the offer; call again with the `PAYMENT-SIGNATURE` value as `payment`.
 
@@ -159,7 +168,12 @@ band's odds, the deployer's record and the buyers' records together.
    (`from` and `to` are echoed, clipped to coverage when needed, with a note).
 2. **Say the as-of.** Quote `X-Data-As-Of` when the number matters; the archive trails the chain by hours.
 3. **Dead coins count.** The shares are over every coin that crossed, including the ones that died. Never drop them.
-4. **Never sign a trade from here.** This skill reads. Trades are your other tools, after the read.
+4. **Buy only when asked.** The reads come first. When the person asks to buy or sell, `POST /buy` (or MCP `buy_coin`)
+   builds the pump.fun trade for their own wallet to sign, with a 0.4% fee inside it; pumpdata never holds a key.
+   Show the quote (`GET /buy/{mint}.json`) and the facts first, never sign for them, and send only what they signed.
+   With a referral code (`"ref": "<code>"` in the body; codes at https://pumpdata.fun/ref), 30% of pumpdata's fee goes
+   to the code's wallet as a second transfer in the same transaction; the trader pays the same 0.4%. Say so when you
+   add one.
 5. **Spend small.** Yesterday's base rate is free; a window is half a cent; check one before spending $2 on a replay.
 6. **Labels are rules.** A `winner` took out 10+ SOL and 1% more than it put in over 20+ coin-weeks; a `net_loser`
    put in 50+ SOL more than it took out; a `bot` snipes create blocks or trades 1,500+ times a day; a

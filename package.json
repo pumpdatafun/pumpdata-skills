@@ -1,13 +1,41 @@
 {
   "name": "pumpdata",
-  "version": "1.1.0",
-  "description": "pump.fun's whole on-chain history for coding agents and the command line: the pre-buy check, wallet classes, the wallet leaderboard, deployer records, base rates. Every pump.fun trade, ever.",
+  "version": "1.2.0",
+  "description": "pump.fun data for coding and trading agents: six skills. A rug check and dev check on any CA before you ape, a dev-wallet watch (dev sold, dev launched again), a new-launch filter for sniper bots, the smart-money wallets worth following, and an honest audit of a KOL's calls with fees and the dead coins. Every pump.fun trade, ever. Read-only; free to start, no key.",
   "type": "module",
-  "bin": { "pumpdata": "cli/pumpdata.mjs" },
-  "files": ["cli/", "skills/", "README.md", "LICENSE"],
-  "engines": { "node": ">=18" },
+  "bin": {
+    "pumpdata": "cli/pumpdata.mjs"
+  },
+  "files": [
+    "cli/",
+    "skills/",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
   "license": "MIT",
   "homepage": "https://pumpdata.fun",
-  "repository": { "type": "git", "url": "git+https://github.com/pumpdatafun/pumpdata-skills.git" },
-  "keywords": ["pump.fun", "pumpfun", "solana", "memecoin", "agent-skills", "claude-code", "mcp", "cli", "copy-trading", "rug-check"]
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pumpdatafun/pumpdata-skills.git"
+  },
+  "keywords": [
+    "pump.fun",
+    "pumpfun",
+    "solana",
+    "memecoin",
+    "agent-skills",
+    "claude-code",
+    "mcp",
+    "cli",
+    "copy-trading",
+    "rug-check",
+    "dev-check",
+    "sniper",
+    "kol",
+    "smart-money",
+    "backtest"
+  ]
 }

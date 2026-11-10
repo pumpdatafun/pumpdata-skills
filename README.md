@@ -11,6 +11,19 @@ Ask your agent "check this coin", "who are these buyers", "which wallets are wor
 
 Facts, not advice. Free with no key and no signup (30 calls every five minutes, 300 a day per IP); a free key from [pumpdata.fun/keys](https://pumpdata.fun/keys?utm_source=skills) has no daily cap.
 
+## The skills
+
+Small skills, one job each; install all of them with the plugin, or copy just the ones you want.
+
+| skill | job |
+|---|---|
+| [`pump-prebuy-check`](skills/pump-prebuy-check/SKILL.md) | one call before you buy a coin: the dev's record, the first-10-second share, the curve bought at launch, insiders, live holders and price impact |
+| [`pump-dev-watch`](skills/pump-dev-watch/SKILL.md) | watch a coin's dev wallet: its sells, and its next launch |
+| [`pump-launch-filter`](skills/pump-launch-filter/SKILL.md) | every new launch, filtered down to the few that pass your rules (for a sniper bot, an alert channel or an agent) |
+| [`pump-follow-wallets`](skills/pump-follow-wallets/SKILL.md) | whole-record winners a copier can keep up with, and any wallet's class (winner, bot, supply seller, new) |
+| [`pump-call-audit`](skills/pump-call-audit/SKILL.md) | did those calls really 40x? Replays a caller's picks with fees, fills and the dead coins, against the base rate |
+| [`pumpdata`](skills/pumpdata/SKILL.md) | the full reference: every call, its price, what each answer means |
+
 ## Install
 
 **Claude Code**, as a plugin (the skill), plus the MCP server:
@@ -35,7 +48,7 @@ Or by hand: `git clone https://github.com/pumpdatafun/pumpdata-skills && cp -r p
 
 **OpenBB:** `pip install openbb-pumpdata`, then `obb.pumpdata.check(mint=...)`, `obb.pumpdata.deployer(address=...)` and seven more ([openbb-pumpdata](https://github.com/pumpdatafun/openbb-pumpdata)).
 
-**Vibe-Trading** (HKUDS), in `~/.vibe-trading/agent.json`, read-only tools only:
+**Vibe-Trading** (HKUDS), in `~/.vibe-trading/agent.json`, the read tools (since Nov 9 the server also has `buy_coin` and `send_tx`, which build and send a trade the agent's own wallet signs; leave them out of a read channel):
 
 ```json
 { "mcpServers": { "pumpdata": {
@@ -71,6 +84,8 @@ pumpdata stats [YYYY-MM-DD]             a day on pump.fun (yesterday by default)
 pumpdata status                         how fresh each layer of the data is right now
 pumpdata trending [--window 6h] [--lane new|hot|both]   the coins with the most SOL flowing in, by lane
 pumpdata ticker <SYMBOL>                 a ticker's crowd: who else launched it, which ever graduated
+pumpdata devwatch <mint> [--every S]     watch the coin's dev: its sells of $1,000+ and its new launches
+pumpdata audit <picks.json> [--id ID]    replay a caller's picks with fees, fills and the dead coins ($2 a run, x402)
 ```
 
 Add `--json` to any command for the raw answer, which is what an agent should read. Set `PUMPDATA_KEY` to use a key.
